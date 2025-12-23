@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ab2bce7f962828478d3f97117b8927e, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: 
+  rows: 8
+  columns: 8
+  spacing: 10
+  cellSize: {x: 70, y: 70}
+  scoreMappings:
+  - value: 4
+    baseScore: 4
+  - value: 8
+    baseScore: 8
+  - value: 16
+    baseScore: 16
+  - value: 32
+    baseScore: 32
+  - value: 64
+    baseScore: 64
+  - value: 128
+    baseScore: 128
+  - value: 256
+    baseScore: 256
+  - value: 512
+    baseScore: 512
+  - value: 1024
+    baseScore: 1024
+  - value: 2048
+    baseScore: 2048
+  tilePrefab: {fileID: 1866557765575120680, guid: b5477c48f23d3bd49803ce6c055f29ab, type: 3}
