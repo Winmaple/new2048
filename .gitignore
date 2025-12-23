@@ -1,6 +1,9 @@
 # This .gitignore is for Unity projects
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 
+# ===============
+# Unity generated
+# ===============
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -31,9 +34,8 @@
 *.mdb
 *.opendb
 *.VC.db
-*.pidb.meta
 
-# Unity3D generated meta files
+# Unity3D generated file
 sysinfo.txt
 
 # Builds
@@ -69,4 +71,4 @@ Thumbs.db
 # Persisted YAML-derived files (will change frequently)
 /[Aa]ssets/**/LightingData.asset
 
-# Never ignore Assets folder itself, only specific generated files above
+# End of .gitignore

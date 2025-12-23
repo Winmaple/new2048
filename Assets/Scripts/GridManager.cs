@@ -20,7 +20,7 @@ namespace Game2048Upgrade
         private bool isProcessing = false;
 
         private int currentScore = 0;
-        private int initialValue = 0; // ¼ÇÂ¼ÆğÊ¼µãµÄÊı×Ö
+        private int initialValue = 0; // ï¿½ï¿½Â¼ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
         void Awake()
         {
@@ -35,7 +35,7 @@ namespace Game2048Upgrade
 
         private void InitializeGrid()
         {
-            // ¼ì²éÅäÖÃ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             if (config == null)
             {
                 Debug.LogError("GameConfig is null! Please assign it in the Inspector.");
@@ -65,16 +65,16 @@ namespace Game2048Upgrade
 
             grid = new Tile[config.columns, config.rows];
 
-            // ÉèÖÃ²¼¾Ö×ÔÊÊÓ¦
+            // ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦
             gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             gridLayout.constraintCount = config.columns;
             gridLayout.cellSize = config.cellSize;
-            gridLayout.spacing = Vector2.zero; // È·±£¼ä¾àÎª0£¬¸ñ×Ó½ôÃÜÏàÁÚ
-            gridLayout.padding = new RectOffset(0, 0, 0, 0); // È·±£Ã»ÓĞÄÚ±ß¾à
+            gridLayout.spacing = Vector2.zero; // È·ï¿½ï¿½ï¿½ï¿½ï¿½Îª0ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            gridLayout.padding = new RectOffset(0, 0, 0, 0); // È·ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ú±ß¾ï¿½
 
             Debug.Log($"Grid Layout Cell Size set to: {gridLayout.cellSize}");
 
-            // Éú³É³õÊ¼ÆåÅÌ£¨ËùÓĞ¸ñ×ÓËæ»úÉú³É2, 4, 8, 16£©
+            // ï¿½ï¿½ï¿½É³ï¿½Ê¼ï¿½ï¿½ï¿½Ì£ï¿½ï¿½ï¿½ï¿½Ğ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2, 4, 8, 16ï¿½ï¿½
             for (int y = 0; y < config.rows; y++)
             {
                 for (int x = 0; x < config.columns; x++)
@@ -102,18 +102,25 @@ namespace Game2048Upgrade
                 return null;
             }
 
-            // ³õÊ¼ºÍ²¹Î»¶¼Ëæ»úÉú³É2, 4, 8, 16
+            // ï¿½ï¿½Ê¼ï¿½Í²ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2, 4, 8, 16
             int[] possibleValues = { 2, 4, 8, 16 };
             int randomValue = possibleValues[Random.Range(0, possibleValues.Length)];
 
             tile.Init(randomValue, x, y);
             grid[x, y] = tile;
 
-            // ÉèÖÃÕıÈ·µÄ UI ²ã¼¶Î»ÖÃ
+            // ç¡®ä¿åˆå§‹åˆ›å»ºçš„æ ¼å­ç¼©æ”¾ä¸ºåŠ¨ç”»ç»“æŸæ—¶çš„å¤§å°ï¼Œé¿å…ä¸æ’­æ”¾åŠ¨ç”»çš„æ ¼å­å°ºå¯¸ä¸ä¸€è‡´
+            RectTransform tileRect = tile.GetComponent<RectTransform>();
+            if (tileRect != null)
+            {
+                tileRect.localScale = Vector3.one;
+            }
+
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ UI ï¿½ã¼¶Î»ï¿½ï¿½
             int siblingIndex = y * config.columns + x;
             tile.transform.SetSiblingIndex(siblingIndex);
 
-            // ·Ç³õÊ¼Éú³ÉÊ±²¥·ÅÏÂÂä¶¯»­
+            // ï¿½Ç³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä¶¯ï¿½ï¿½
             if (!isInitialSpawn)
             {
                 StartCoroutine(PlayDropAnimation(tile));
@@ -129,34 +136,48 @@ namespace Game2048Upgrade
 
             RectTransform rectTransform = tile.GetComponent<RectTransform>();
             if (rectTransform == null) yield break;
+            // ç¡®ä¿å¸ƒå±€å·²è®¡ç®—ï¼Œè·å–ç›®æ ‡ä½ç½®
+            if (gridParent != null)
+            {
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(gridParent);
+            }
 
-            // ±£´æÄ¿±êËõ·Å
-            Vector3 targetScale = Vector3.one;
+            Vector2 targetPos = rectTransform.anchoredPosition;
 
-            // ´ÓËõ·Å0¿ªÊ¼
-            rectTransform.localScale = Vector3.zero;
+            // è®¡ç®—ä»ä¸Šæ–¹å¼€å§‹çš„èµ·å§‹ä½ç½®ï¼ˆåŸºäºæ ¼å­é«˜åº¦å’Œè¡Œæ•°ï¼‰
+            float dropOffset = 0f;
+            if (config != null)
+            {
+                dropOffset = config.cellSize.y * config.rows + 50f;
+            }
+            else if (gridParent != null)
+            {
+                dropOffset = gridParent.rect.height + 50f;
+            }
 
-            // ¶¯»­Ê±³¤
-            float duration = 0.2f;
+            Vector2 startPos = targetPos + new Vector2(0f, dropOffset);
+
+            // ä¿è¯ç¼©æ”¾ä¸ºæ­£å¸¸å¤§å°
+            rectTransform.localScale = Vector3.one;
+
+            // è®¾ç½®èµ·å§‹ä½ç½®å¹¶åšä¸‹è½æ’å€¼
+            rectTransform.anchoredPosition = startPos;
+
+            float duration = 0.25f;
             float elapsed = 0f;
 
             while (elapsed < duration)
             {
-                // ¼ì²é¶ÔÏóÊÇ·ñ»¹´æÔÚ
                 if (tile == null || rectTransform == null) yield break;
-
                 elapsed += Time.deltaTime;
-                float t = Mathf.Clamp01(elapsed / duration);
-                // Ê¹ÓÃÆ½»¬»º¶¯£¬²»³¬¹ı1.0£¬±ÜÃâ¸ñ×Ó±ä´ó
-                float scale = Mathf.SmoothStep(0f, 1f, t);
-                rectTransform.localScale = targetScale * scale;
+                float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / duration));
+                rectTransform.anchoredPosition = Vector2.Lerp(startPos, targetPos, t);
                 yield return null;
             }
 
-            // È·±£×îÖÕËõ·ÅÕıÈ·
             if (rectTransform != null)
             {
-                rectTransform.localScale = targetScale;
+                rectTransform.anchoredPosition = targetPos;
             }
         }
 
@@ -188,10 +209,10 @@ namespace Game2048Upgrade
             Tile tile = GetTileUnderMouse();
             if (tile != null)
             {
-                ClearHighlights(); // Çå³ıÖ®Ç°µÄ¸ßÁÁ
+                ClearHighlights(); // ï¿½ï¿½ï¿½Ö®Ç°ï¿½Ä¸ï¿½ï¿½ï¿½
                 currentSelection.Clear();
                 currentSelection.Add(tile);
-                initialValue = tile.Value; // ¼ÇÂ¼ÆğÊ¼Êı×Ö
+                initialValue = tile.Value; // ï¿½ï¿½Â¼ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
                 UpdateHighlights();
             }
         }
@@ -202,26 +223,26 @@ namespace Game2048Upgrade
 
             if (tile == null) return;
 
-            // ¼ì²éÁĞ±íÊÇ·ñÎª¿Õ
+            // ï¿½ï¿½ï¿½ï¿½Ğ±ï¿½ï¿½Ç·ï¿½Îªï¿½ï¿½
             if (currentSelection.Count == 0) return;
 
-            // Èç¹ûÒÑ¾­ÔÚÑ¡ÔñÁĞ±íÖĞ£¬²»´¦Àí
+            // ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ğ±ï¿½ï¿½Ğ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             if (currentSelection.Contains(tile)) return;
 
             Tile lastTile = currentSelection[currentSelection.Count - 1];
 
-            // ¼ì²éÊÇ·ñÏàÁÚ£¨²»ÔÊĞíĞ±ÏßÁ¬½Ó£©ÇÒÊı×ÖÓëÆğÊ¼µãÏàÍ¬
+            // ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ±ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Í¬
             if (IsAdjacentNoDiagonal(lastTile, tile))
             {
                 if (tile.Value == initialValue)
                 {
-                    // Êı×ÖÏàÍ¬£¬Ìí¼Óµ½Ñ¡ÔñÁĞ±í
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ñ¡ï¿½ï¿½ï¿½Ğ±ï¿½
                     currentSelection.Add(tile);
                     UpdateHighlights();
                 }
                 else
                 {
-                    // Êı×Ö²»Í¬£¬È¡ÏûËùÓĞ¸ßÁÁ²¢ÖØÖÃÑ¡Ôñ
+                    // ï¿½ï¿½ï¿½Ö²ï¿½Í¬ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
                     ClearHighlights();
                     currentSelection.Clear();
                 }
@@ -243,12 +264,12 @@ namespace Game2048Upgrade
 
         private void UpdateHighlights()
         {
-            // Ö»ÓĞÑ¡ÖĞ¸ñ×ÓÊı >= 2 Ê±²Å¸ßÁÁ
+            // Ö»ï¿½ï¿½Ñ¡ï¿½Ğ¸ï¿½ï¿½ï¿½ï¿½ï¿½ >= 2 Ê±ï¿½Å¸ï¿½ï¿½ï¿½
             if (currentSelection.Count >= 2)
             {
                 foreach (var tile in currentSelection)
                 {
-                    // ¼ì²é tile ÊÇ·ñ»¹´æÔÚ
+                    // ï¿½ï¿½ï¿½ tile ï¿½Ç·ñ»¹´ï¿½ï¿½ï¿½
                     if (tile != null)
                     {
                         tile.SetHighlight(true);
@@ -265,7 +286,7 @@ namespace Game2048Upgrade
         {
             foreach (var tile in currentSelection)
             {
-                // ¼ì²é tile ÊÇ·ñ»¹´æÔÚ£¨¿ÉÄÜÒÑ±»Ïú»Ù£©
+                // ï¿½ï¿½ï¿½ tile ï¿½Ç·ñ»¹´ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ±ï¿½ï¿½ï¿½ï¿½Ù£ï¿½
                 if (tile != null)
                 {
                     tile.SetHighlight(false);
@@ -277,44 +298,56 @@ namespace Game2048Upgrade
         {
             isProcessing = true;
 
-            // ±£Áô×îºóÒ»¸ö¸ñ×Ó×÷ÎªºÏ²¢Ä¿±ê
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½Ï²ï¿½Ä¿ï¿½ï¿½
             Tile targetTile = currentSelection[currentSelection.Count - 1];
             int targetX = targetTile.X;
             int targetY = targetTile.Y;
 
-            Debug.Log($"ºÏ²¢µ½Î»ÖÃ: ({targetX}, {targetY}), Ô­Öµ: {targetTile.Value}");
+            Debug.Log($"ï¿½Ï²ï¿½ï¿½ï¿½Î»ï¿½ï¿½: ({targetX}, {targetY}), Ô­Öµ: {targetTile.Value}");
 
-            // °´ÕÕ2048¹æÔò£º¶à¸öÏàÍ¬Êı×ÖºÏ²¢Éú³ÉÏÂÒ»¸öÄ¿±êÊı×Ö
+            // åœ¨é”€æ¯å…¶ä»–æ ¼å­å‰ç¦ç”¨å¸ƒå±€ï¼Œé¿å…ä¸­é—´é‡æ’å¯¼è‡´ç›®æ ‡æ ¼å­é—ªçƒ/æ¶ˆå¤±
+            if (gridLayout != null)
+            {
+                gridLayout.enabled = false;
+            }
+
+            // ï¿½ï¿½ï¿½ï¿½2048ï¿½ï¿½ï¿½ò£º¶ï¿½ï¿½ï¿½ï¿½Í¬ï¿½ï¿½ï¿½ÖºÏ²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             int newValue = targetTile.Value * 2;
 
-            // ¼ÆËãµÃ·Ö
+            // ï¿½ï¿½ï¿½ï¿½Ã·ï¿½
             int score = config.GetScore(targetTile.Value, currentSelection.Count);
             AddScore(score);
 
-            // Ïú»Ù³ı×îºóÒ»¸öÍâµÄËùÓĞ¸ñ×Ó£¨°üÀ¨µÚÒ»¸öµ½µ¹ÊıµÚ¶ş¸ö£©
+            // ï¿½ï¿½ï¿½Ù³ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¸ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½
             for (int i = 0; i < currentSelection.Count - 1; i++)
             {
                 Tile t = currentSelection[i];
-                Debug.Log($"Ïú»Ù¸ñ×Ó: ({t.X}, {t.Y})");
+                Debug.Log($"ï¿½ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½: ({t.X}, {t.Y})");
 
-                // Çå³ıÍø¸ñÒıÓÃ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 grid[t.X, t.Y] = null;
 
-                // Ïú»ÙÓÎÏ·¶ÔÏó
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½
                 Destroy(t.gameObject);
             }
 
-            // µÈ´ıÒ»Ö¡È·±£Ïú»ÙÍê³É
+            // ï¿½È´ï¿½Ò»Ö¡È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             yield return null;
 
-            // ¸üĞÂ×îºóÒ»¸ö¸ñ×ÓµÄÖµ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½Öµ
             targetTile.UpdateValue(newValue);
 
-            // È·±£Ä¿±ê¸ñ×ÓµÄÍø¸ñÎ»ÖÃÕıÈ·
+            // ç¡®ä¿ UI çŠ¶æ€æ›´æ–°åå†ç»§ç»­ï¼ˆå¸ƒå±€ä»ç¦ç”¨ï¼‰
+            if (gridParent != null)
+            {
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(gridParent);
+            }
+
+            // È·ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½È·
             grid[targetX, targetY] = targetTile;
             targetTile.UpdatePosition(targetX, targetY);
 
-            Debug.Log($"ºÏ²¢Íê³É: Î»ÖÃ({targetX}, {targetY}), ĞÂÖµ: {newValue}");
+            Debug.Log($"ï¿½Ï²ï¿½ï¿½ï¿½ï¿½: Î»ï¿½ï¿½({targetX}, {targetY}), ï¿½ï¿½Öµ: {newValue}");
 
             yield return new WaitForSeconds(0.2f);
 
@@ -327,24 +360,30 @@ namespace Game2048Upgrade
 
         private IEnumerator HandleGravity()
         {
-            // 1. ´¹Ö±ÏÂÂä£ºÃ¿Ò»ÁĞÖĞ£¬ÉÏ·½µÄ¸ñ×ÓÏòÏÂÌî²¹¿ÕÎ»
+            // åœ¨è¿›è¡Œå¤§é‡æ ¼å­ç§»åŠ¨å’Œé”€æ¯/åˆ›å»ºæ—¶ï¼Œä¸´æ—¶ç¦ç”¨å¸ƒå±€é‡æ’
+            if (gridLayout != null)
+            {
+                gridLayout.enabled = false;
+            }
+
+            
             bool hasVerticalMove;
             do
             {
                 hasVerticalMove = false;
                 for (int x = 0; x < config.columns; x++)
                 {
-                    // ´ÓÏÂÍùÉÏ¼ì²éÃ¿¸öÎ»ÖÃ
+                   
                     for (int y = config.rows - 1; y >= 0; y--)
                     {
                         if (grid[x, y] == null)
                         {
-                            // ÏòÉÏÕÒµÚÒ»¸ö²»Îª¿ÕµÄ¸ñ×Ó
+                            // ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½Ò»ï¿½ï¿½ï¿½ï¿½Îªï¿½ÕµÄ¸ï¿½ï¿½ï¿½
                             for (int k = y - 1; k >= 0; k--)
                             {
                                 if (grid[x, k] != null)
                                 {
-                                    // ½«ÉÏ·½¸ñ×ÓÒÆ¶¯µ½µ±Ç°¿ÕÎ»
+                                    // ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Î»
                                     grid[x, y] = grid[x, k];
                                     grid[x, k] = null;
                                     grid[x, y].UpdatePosition(x, y);
@@ -358,15 +397,15 @@ namespace Game2048Upgrade
 
                 if (hasVerticalMove)
                 {
-                    yield return new WaitForSeconds(0.15f); // µÈ´ı´¹Ö±ÏÂÂä¶¯»­
+                    yield return new WaitForSeconds(0.15f); // ï¿½È´ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½ä¶¯ï¿½ï¿½
                 }
             } while (hasVerticalMove);
 
-            // 2. ²¹Î»Âß¼­£ºÍ³¼ÆÃ¿ÁĞµÄ¿ÕÎ»ÊıÁ¿£¬´Ó¶¥²¿Éú³ÉÏàÓ¦ÊıÁ¿µÄĞÂ¸ñ×Ó
+            // 2. ï¿½ï¿½Î»ï¿½ß¼ï¿½ï¿½ï¿½Í³ï¿½ï¿½Ã¿ï¿½ĞµÄ¿ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¸ï¿½ï¿½ï¿½
             List<Tile> newTiles = new List<Tile>();
             for (int x = 0; x < config.columns; x++)
             {
-                // Í³¼ÆÕâÒ»ÁĞÓĞ¶àÉÙ¸ö¿ÕÎ»
+                // Í³ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ğ¶ï¿½ï¿½Ù¸ï¿½ï¿½ï¿½Î»
                 int emptyCount = 0;
                 for (int y = 0; y < config.rows; y++)
                 {
@@ -376,7 +415,7 @@ namespace Game2048Upgrade
                     }
                 }
 
-                // ´Ó¶¥²¿Éú³ÉÏàÓ¦ÊıÁ¿µÄĞÂ¸ñ×Ó
+                // ï¿½Ó¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¸ï¿½ï¿½ï¿½
                 for (int i = 0; i < emptyCount; i++)
                 {
                     Tile newTile = CreateTileAndReturn(x, i, false);
@@ -387,27 +426,34 @@ namespace Game2048Upgrade
                 }
             }
 
-            // µÈ´ıËùÓĞĞÂ¸ñ×ÓµÄÉú³É¶¯»­Íê³É
+            // ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¸ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½É¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             if (newTiles.Count > 0)
             {
                 yield return StartCoroutine(WaitForAllDropAnimations(newTiles));
             }
 
-            // 3. ÔÙ´ÎÖ´ĞĞÏÂÂä£¬ÈÃĞÂÉú³ÉµÄ¸ñ×ÓµôÂäµ½µ×²¿
+            // 3. ï¿½Ù´ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ä£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÉµÄ¸ï¿½ï¿½Óµï¿½ï¿½äµ½ï¿½×²ï¿½
             yield return StartCoroutine(HandleGravityAfterSpawn());
 
-            // 4. ×îºóÍ³Ò»Ë¢ĞÂËùÓĞ¸ñ×ÓµÄUI²ã¼¶Ë³Ğò
+            // 4. ï¿½ï¿½ï¿½Í³Ò»Ë¢ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¸ï¿½ï¿½Óµï¿½UIï¿½ã¼¶Ë³ï¿½ï¿½
             RefreshAllTileSiblingIndices();
+
+            // æ¢å¤å¸ƒå±€å¹¶å¼ºåˆ¶é‡å»ºä¸€æ¬¡ï¼Œç¡®ä¿æœ€ç»ˆä½ç½®æ­£ç¡®ä¸”åªå‘ç”Ÿä¸€æ¬¡é‡æ’
+            if (gridLayout != null && gridParent != null)
+            {
+                gridLayout.enabled = true;
+                UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(gridParent);
+            }
         }
 
-        // µÈ´ıËùÓĞ¸ñ×ÓµÄÏÂÂä¶¯»­Íê³É
+        // ï¿½È´ï¿½ï¿½ï¿½ï¿½Ğ¸ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ä¶¯ï¿½ï¿½ï¿½ï¿½ï¿½
         private IEnumerator WaitForAllDropAnimations(List<Tile> tiles)
         {
-            float duration = 0.3f; // Ôö¼ÓµÈ´ıÊ±¼ä£¬È·±£¶¯»­ÍêÈ«Íê³É
+            float duration = 0.3f; // ï¿½ï¿½ï¿½ÓµÈ´ï¿½Ê±ï¿½ä£¬È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½
             yield return new WaitForSeconds(duration);
         }
 
-        // Ë¢ĞÂËùÓĞ¸ñ×ÓµÄUI²ã¼¶Ë³Ğò£¨ÔÚËùÓĞÒÆ¶¯ºÍÉú³ÉÍê³Éºóµ÷ÓÃ£©
+        // Ë¢ï¿½ï¿½ï¿½ï¿½ï¿½Ğ¸ï¿½ï¿½Óµï¿½UIï¿½ã¼¶Ë³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½ï¿½Ã£ï¿½
         private void RefreshAllTileSiblingIndices()
         {
             for (int y = 0; y < config.rows; y++)
@@ -423,7 +469,7 @@ namespace Game2048Upgrade
             }
         }
 
-        // ĞÂ¸ñ×ÓÉú³ÉºóµÄÏÂÂä´¦Àí
+        // ï¿½Â¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½ï¿½ï¿½ï¿½ä´¦ï¿½ï¿½
         private IEnumerator HandleGravityAfterSpawn()
         {
             bool hasMoved;
@@ -458,18 +504,18 @@ namespace Game2048Upgrade
             } while (hasMoved);
         }
 
-        // ¼ì²éÊÇ·ñÏàÁÚ£¨ÉÏÏÂ×óÓÒ£¬²»°üÀ¨Ğ±Ïß£©
+        // ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ±ï¿½ß£ï¿½
         private bool IsAdjacentNoDiagonal(Tile a, Tile b)
         {
             int dx = Mathf.Abs(a.X - b.X);
             int dy = Mathf.Abs(a.Y - b.Y);
-            // ±ØĞëÖ»ÔÚÒ»¸ö·½ÏòÉÏÏà²î1£¬ÁíÒ»¸ö·½ÏòÏàÍ¬
+            // ï¿½ï¿½ï¿½ï¿½Ö»ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¬
             return (dx == 1 && dy == 0) || (dx == 0 && dy == 1);
         }
 
         private Tile GetTileUnderMouse()
         {
-            // ¼òµ¥ÊµÏÖ£ºÍ¨¹ıÉäÏß¼ì²â»òUIµã»÷
+            // ï¿½ï¿½Êµï¿½Ö£ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½
             PointerEventData eventData = new PointerEventData(EventSystem.current);
             eventData.position = Input.mousePosition;
             List<RaycastResult> results = new List<RaycastResult>();
