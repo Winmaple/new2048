@@ -136,6 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   valueText: {fileID: 2032800339042904804}
   background: {fileID: 6948800650970051778}
+  iconImage: {fileID: 6948800650970051778}
   highlightOverlay: {fileID: 0}
 --- !u!1 &2817703230623704794
 GameObject:

@@ -16,6 +16,9 @@ namespace Game2048Upgrade
         [SerializeField] private GridLayoutGroup gridLayout;
 
         private Tile[,] grid;
+
+        // 公开配置以便 Tile 可以获取图标映射
+        public GameConfig Config => config;
         private List<Tile> currentSelection = new List<Tile>();
         private bool isProcessing = false;
 

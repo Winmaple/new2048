@@ -18,6 +18,10 @@ namespace Game2048Upgrade
         [Header("Prefab References")]
         public GameObject tilePrefab;
 
+        [Header("Value Icons")]
+        // Inspector 中按 2,4,8... 顺序填入对应图标
+        public Sprite[] valueIcons;
+
         public int GetScore(int value, int count)
         {
             foreach (var mapping in scoreMappings)
@@ -28,6 +32,23 @@ namespace Game2048Upgrade
                 }
             }
             return value * count;
+        }
+
+        public Sprite GetIconForValue(int value)
+        {
+            if (valueIcons == null || valueIcons.Length == 0) return null;
+            int index = 0;
+            int v = 2;
+            while (v < value && index < valueIcons.Length - 1)
+            {
+                v <<= 1;
+                index++;
+            }
+            if (v == value && index < valueIcons.Length)
+            {
+                return valueIcons[index];
+            }
+            return null;
         }
     }
 

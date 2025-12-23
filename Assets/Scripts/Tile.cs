@@ -12,7 +12,8 @@ namespace Game2048Upgrade
 
         [SerializeField] private TextMeshProUGUI valueText;
         [SerializeField] private Image background;
-        [SerializeField] private Image highlightOverlay; // ¸ßÁÁÕÚÕÖ²ã
+        [SerializeField] private Image iconImage; // æ–°å¢žï¼šå›¾æ¡ˆæ˜¾ç¤º
+        [SerializeField] private Image highlightOverlay; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½
 
         private Color normalColor;
         private bool isHighlighted = false;
@@ -39,7 +40,7 @@ namespace Game2048Upgrade
 
         public void SetHighlight(bool highlight)
         {
-            // ¼ì²é¶ÔÏóÊÇ·ñÒÑ±»Ïú»Ù
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ñ±ï¿½ï¿½ï¿½ï¿½ï¿½
             if (this == null || background == null)
                 return;
 
@@ -50,7 +51,7 @@ namespace Game2048Upgrade
             }
             else
             {
-                // Èç¹ûÃ»ÓÐµ¥¶ÀµÄ¸ßÁÁ²ã£¬Ê¹ÓÃÑÕÉ«µþ¼Ó
+                // ï¿½ï¿½ï¿½Ã»ï¿½Ðµï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ã£¬Ê¹ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½
                 if (highlight)
                 {
                     background.color = Color.Lerp(normalColor, Color.white, 0.3f);
@@ -77,15 +78,37 @@ namespace Game2048Upgrade
             }
 
             valueText.text = Value.ToString();
-            // ¶¯Ì¬µ÷Õû×ÖÌå´óÐ¡
+            // ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡
             int length = valueText.text.Length;
             if (length <= 2) valueText.fontSize = 50;
             else if (length == 3) valueText.fontSize = 40;
             else valueText.fontSize = 30;
 
-            // ¸ù¾ÝÊýÖµ¸Ä±äÑÕÉ«£¨¼òµ¥ÊµÏÖ£©
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½Ä±ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½Êµï¿½Ö£ï¿½
             normalColor = GetColorByValue(Value);
             background.color = normalColor;
+
+            // å›¾æ ‡æ”¯æŒï¼šä»Žé…ç½®ä¸­èŽ·å–å¯¹åº”ç²¾çµï¼Œè‹¥å­˜åœ¨åˆ™æ˜¾ç¤ºå›¾æ ‡å¹¶éšè—æ–‡æœ¬
+            Sprite icon = null;
+            if (GridManager.Instance != null && GridManager.Instance.Config != null)
+            {
+                icon = GridManager.Instance.Config.GetIconForValue(Value);
+            }
+
+            if (iconImage != null)
+            {
+                if (icon != null)
+                {
+                    iconImage.sprite = icon;
+                    iconImage.enabled = true;
+                    if (valueText != null) valueText.enabled = false;
+                }
+                else
+                {
+                    iconImage.enabled = false;
+                    if (valueText != null) valueText.enabled = true;
+                }
+            }
         }
 
         private Color GetColorByValue(int value)
