@@ -38,3 +38,15 @@ MonoBehaviour:
   - value: 2048
     baseScore: 2048
   tilePrefab: {fileID: 1866557765575120680, guid: b5477c48f23d3bd49803ce6c055f29ab, type: 3}
+  valueIcons:
+  - {fileID: 21300000, guid: fcdab4ddd6bad264aaa6de1b9cef88f3, type: 3}
+  - {fileID: 21300000, guid: 6cd8f808d95f8614da59ec77aca95706, type: 3}
+  - {fileID: 21300000, guid: 85ee6756fec0de240b2de79480dd6c5c, type: 3}
+  - {fileID: 21300000, guid: 6b2346fed8ab0a743b4f169c1aa31997, type: 3}
+  - {fileID: 21300000, guid: 24eae9c77788f5e49b9b2452fea84809, type: 3}
+  - {fileID: 21300000, guid: 4987207166a847d458db4641dcef4753, type: 3}
+  - {fileID: 21300000, guid: cb89b42ccf43f3b4c99ffdaba882df85, type: 3}
+  - {fileID: 21300000, guid: d894d3a61210c6644b319fee72efca97, type: 3}
+  - {fileID: 21300000, guid: 2fc4fad567864484387e67caacf8a306, type: 3}
+  - {fileID: 21300000, guid: 88b04a2e9b1c82b42bd606ca15c9b559, type: 3}
+  - {fileID: 21300000, guid: d894d3a61210c6644b319fee72efca97, type: 3}
